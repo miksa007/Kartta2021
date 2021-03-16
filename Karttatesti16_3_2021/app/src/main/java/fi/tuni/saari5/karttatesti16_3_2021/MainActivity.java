@@ -1,40 +1,35 @@
-# Kartta2021
+package fi.tuni.saari5.karttatesti16_3_2021;
 
-Huom. testattu 'minSdkVersion 28' määrityksellä.
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
-Tutoriaali OpenStreetMap käyttöön omassa sovelluksessa. Huom. Kartan kaupallinen käyttö vaatii tutustumista käyttöehtoihin...
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+//import android.preference.PreferenceManager;
 
-Aluksi vaadittu OSM-kirjasto `build.gradle(:app)` tiedoston depencies osaan, Ja toinen jota käytetään kartta-aineiston lataukseen:
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 
-        implementation 'org.osmdroid:osmdroid-android:6.1.10'
-        implementation 'androidx.preference:preference:1.1.1'
+import java.util.ArrayList;
 
-Kartta vaatii oikeudet `AndroidManifest.xml` tiedostoon:
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG="softa_kartta";
+    private MapView mMapView =null;
+    private MapController mMapController;
 
-        <uses-permission android:name="android.permission.INTERNET" />
-
-Käyttöliittymä `activity_main.xml` sisältää MapView -komponentin. Ei muuta.
-
-    <org.osmdroid.views.MapView
-        android:id="@+id/mapview"
-        tilesource="Mapnik"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-Seuraavaksi muutoksia MainActivity.java tiedostooon. Aluksi muutama luokkamuuttuja:
-        
-        private static final String TAG="softa_kartta";
-        private MapView mMapView =null;
-    
-        private final int REQUEST_PERMISSIONS_REQUEST_CODE = 101;
-
-Ja sitten onCreate metodiin tarpeeliset osiot suunnilleen seuraavassa järjestyksessä:
-* Kartta-aineiston lataus
-* MapView määrittely
-* Käyttöliittymään yhdistäminen
-* oikeuksien kysely. Tässä esitetty tapa hyväksyy monta kyselyä samaan aikaan (requestPermissionsIfNecessary()-metodi kohta...)
-* Karttapiste Hervoodiin
-* Kartan keskitys pisteeseen
+    private final int REQUEST_PERMISSIONS_REQUEST_CODE = 101;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         Context ctx = this.getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -54,10 +49,13 @@ Ja sitten onCreate metodiin tarpeeliset osiot suunnilleen seuraavassa järjestyk
         GeoPoint gPt = new GeoPoint(61.44989, 23.85688);
 
         mMapView.getController().setCenter(gPt);
+    }
 
-Oikeuksien kyselyyn metodi joka hyväksyy monta(taulukkona):
 
-         private void requestPermissionsIfNecessary(String[] permissions) {
+    /**
+     * Kysellään useaa oikeutta tarpeen mukaan
+     */
+    private void requestPermissionsIfNecessary(String[] permissions) {
         ArrayList<String> permissionsToRequest = new ArrayList<>();
         for (String permission : permissions) {
             if (ContextCompat.checkSelfPermission(this, permission)
@@ -73,9 +71,7 @@ Oikeuksien kyselyyn metodi joka hyväksyy monta(taulukkona):
         }
     }
 
-Ja tulosten käsittely oikeuksien kyselystä
-
-         @Override
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         ArrayList<String> permissionsToRequest = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
@@ -88,5 +84,4 @@ Ja tulosten käsittely oikeuksien kyselystä
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
-
-Ja jos ei käynnistyksessä tule karttakuvaa, niin kommenttia tänne mika.saari@tuni.fi
+}
