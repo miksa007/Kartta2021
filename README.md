@@ -22,11 +22,14 @@ Käyttöliittymä `activity_main.xml` sisältää MapView -komponentin. Ei muuta
         android:layout_height="match_parent" />
 
 Seuraavaksi muutoksia MainActivity.java tiedostooon. Aluksi muutama luokkamuuttuja:
-        
-        private static final String TAG="softa_kartta";
-        private MapView mMapView =null;
     
-        private final int REQUEST_PERMISSIONS_REQUEST_CODE = 101;
+```java
+    private static final String TAG="softa_kartta";
+    private MapView mMapView =null;
+    private MapController mMapController;
+
+    private final int REQUEST_PERMISSIONS_REQUEST_CODE = 101;
+```
 
 Ja sitten onCreate metodiin tarpeeliset osiot suunnilleen seuraavassa järjestyksessä:
 * Kartta-aineiston lataus
@@ -35,7 +38,7 @@ Ja sitten onCreate metodiin tarpeeliset osiot suunnilleen seuraavassa järjestyk
 * oikeuksien kysely. Tässä esitetty tapa hyväksyy monta kyselyä samaan aikaan (requestPermissionsIfNecessary()-metodi kohta...)
 * Karttapiste Hervoodiin
 * Kartan keskitys pisteeseen
-
+```java
         Context ctx = this.getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
@@ -54,28 +57,32 @@ Ja sitten onCreate metodiin tarpeeliset osiot suunnilleen seuraavassa järjestyk
         GeoPoint gPt = new GeoPoint(61.44989, 23.85688);
 
         mMapView.getController().setCenter(gPt);
+```
 
 Oikeuksien kyselyyn metodi joka hyväksyy monta(taulukkona):
 
-         private void requestPermissionsIfNecessary(String[] permissions) {
+```java
+    private void requestPermissionsIfNecessary(String[] permissions) {
         ArrayList<String> permissionsToRequest = new ArrayList<>();
         for (String permission : permissions) {
             if (ContextCompat.checkSelfPermission(this, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
                 permissionsToRequest.add(permission);
             }
         }
         if (permissionsToRequest.size() > 0) {
             ActivityCompat.requestPermissions(
-                    this,
-                    permissionsToRequest.toArray(new String[0]),
-                    REQUEST_PERMISSIONS_REQUEST_CODE);
+                this,
+                permissionsToRequest.toArray(new String[0]),
+                REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
+```
 
 Ja tulosten käsittely oikeuksien kyselystä
 
-         @Override
+```java
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         ArrayList<String> permissionsToRequest = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
@@ -88,5 +95,5 @@ Ja tulosten käsittely oikeuksien kyselystä
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
-
+```
 Ja jos ei käynnistyksessä tule karttakuvaa, niin kommenttia tänne mika.saari@tuni.fi
