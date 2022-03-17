@@ -7,7 +7,7 @@ Tutoriaali OpenStreetMap käyttöön omassa sovelluksessa. Huom. Kartan kaupalli
 Aluksi vaadittu OSM-kirjasto `build.gradle(:app)` tiedoston depencies osaan, Ja toinen jota käytetään kartta-aineiston lataukseen:
 
         implementation 'org.osmdroid:osmdroid-android:6.1.10'
-        implementation 'androidx.preference:preference:1.1.1'
+        implementation 'androidx.preference:preference:1.2.0'
 
 Kartta vaatii oikeudet `AndroidManifest.xml` tiedostoon:
 
